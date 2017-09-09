@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Repositories\ProductRepository;
 use App\Transformers\ProductTransformer;
-
 use League\Fractal\Manager;
+
 class ProductController extends Controller
 {
 

@@ -4,13 +4,19 @@ namespace App\Repositories;
 use App\Exceptions\InvalidFilterException;
 
 class BaseRepository {
-	
-	protected $model;
 
+	//List of available filters
 	protected $availabelFilterFields = [];
 
+	//List of available sort filters
 	protected $availabelSortFields = [];
 
+	/**
+	 * 
+	 * @param  [Eloquent Builder Object] $query
+	 * @param  [Array] $filters
+	 * @return [None]
+	 */
 	public function applyFilters($query, $filters){
 		if (isset($filters['sort'])) {
 			unset($filters['sort']);
@@ -26,6 +32,12 @@ class BaseRepository {
 		}
 	}	
 
+	/**
+	 * 
+	 * @param  [Eloquent Builder Object] $query
+	 * @param  [Array] $sort
+	 * @return [None]
+	 */
 	public function applySort($query, $sort){
 		if (!in_array($sort, $this->availabelSortFields)) {
 			throw new InvalidFilterException( 'Invalid sort field in request - ' . $sort );
