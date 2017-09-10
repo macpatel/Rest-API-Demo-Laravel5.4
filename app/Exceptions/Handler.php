@@ -45,7 +45,7 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {   
         //For API reuqest check 
-        if ( $request->isJson() ) {
+        if ( $request->is("api/*") ) {
             switch (true) {
                 case $this->isHttpException($exception):
                     switch ( $exception->getStatusCode() ) {

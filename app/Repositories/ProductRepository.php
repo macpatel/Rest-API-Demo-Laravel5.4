@@ -13,7 +13,8 @@ class ProductRepository extends BaseRepository{
 		'price_min', 
 		'price_max', 
 		'color', 
-		'category'
+		'category',
+		'page'
 	];
 
 	//@override - List of available sort values for product api. Anything outside this is invalid filter
