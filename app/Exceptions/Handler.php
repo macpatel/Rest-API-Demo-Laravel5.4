@@ -64,6 +64,7 @@ class Handler extends ExceptionHandler
                     $error['error'] = $exception->getMessage();
                     $error['status_code'] = 400;
                     return response()->json($error, 400);
+                    break;
                 default:
                     # code...
                     break;

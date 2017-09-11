@@ -2,6 +2,8 @@
 namespace App\Repositories;
 
 use App\Exceptions\InvalidFilterException;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\Request;
 
 class BaseRepository {
 
@@ -10,6 +12,9 @@ class BaseRepository {
 
 	//List of available sort filters
 	protected $availabelSortFields = [];
+
+	//cahcing query time in minutes
+	protected $cacheTime = 30;
 
 	/**
 	 * 
@@ -46,5 +51,46 @@ class BaseRepository {
 		if (method_exists($this, $methodName)) {
 			$this->$methodName($query);
 		}
-	}	
+	}
+
+	/**
+	 * Check if the request is cached or not
+	 * @param  Request $request 
+	 * @return boolean
+	 */
+	public function isCached( Request $request ){
+		$key = $this->generateKeyFromUrl($request);
+		return Cache::has($key);
+	}
+
+	/**
+	 * Returns cached entry if its already cacched other wise false
+	 * @param  Request $request 
+	 * @return Mixed
+	 */
+	public function getCache( Request $request ){
+		$key = $this->generateKeyFromUrl($request);
+		return Cache::get($key);
+	}
+
+	/**
+	 * Save the data in cache
+	 * @param  Request $request
+	 * @param  [type]  $data    [description]
+	 */
+	public function putCache( Request $request, $data){
+		$key = $this->generateKeyFromUrl($request);
+		Cache::put($key, $data, $this->cacheTime);
+	}
+
+	public function generateKeyFromUrl(Request $request){
+		$url = $request->url();
+		$queryParams = request()->query();
+		ksort($queryParams);
+		$queryString = http_build_query($queryParams);
+		$fullUrl = "{$url}?{$queryString}";
+		$key = sha1($fullUrl);
+		#$key = $fullUrl;
+		return $key;
+	}
 }

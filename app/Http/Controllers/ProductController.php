@@ -20,7 +20,7 @@ class ProductController extends Controller
 	}
 
     public function index(Request $request){
-    	$paginator = $this->repo->all($request->all());
+    	$paginator = $this->repo->all($request);
     	return response()->json($this->paginateCollection($paginator), 200);
     }
 }

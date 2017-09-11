@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class ProductRepository extends BaseRepository{
 
@@ -24,6 +25,9 @@ class ProductRepository extends BaseRepository{
 		'latest' 
 	];
 
+	//cahcing query time in minutes
+	protected $cacheTime = 20;
+
 	public function __construct(Product $product){
 		$this->model = $product;
 	}
@@ -34,7 +38,13 @@ class ProductRepository extends BaseRepository{
      * @param  Array $params
      * @return Laravel Collection Object
      */
-	public function all($params = array() ){
+	public function all( Request $request ){
+		$params = $request->all();
+		
+		if ($this->isCached($request)) {
+			return $this->getCache($request);
+		}
+
 		if ( isset($params) && !empty($params)) {
 			//If there are filter parameters present
 			//Create builder object for the model
@@ -47,10 +57,15 @@ class ProductRepository extends BaseRepository{
 			if ( isset($params['sort']) ) {
 				$this->applySort($query, $params['sort']);
 			}
-			return $query->paginate(15);
+			$data = $query->paginate(15);
+
+			$this->putCache($request, $data);
+			return $data;
 		}
 		else{
-			return $this->model->paginate(15);
+			$data = $this->model->paginate(15);
+			$this->putCache($request, $data);
+			return $data;
 		}
 	}
 // Filters
